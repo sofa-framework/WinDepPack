@@ -1,14 +1,21 @@
 cmake_minimum_required(VERSION 3.22)
 
-list(APPEND CMAKE_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
-if(CMAKE_CL_64)
-    list(APPEND CMAKE_LIBRARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/win64)
+message("Building package with pixi : will install glew and zlib header by hands to cope for the absence of the WinDepPack")
+find_package(GLEW REQUIRED QUIET)
+get_target_property(glew_incl GLEW::GLEW INTERFACE_INCLUDE_DIRECTORIES)
+if(NOT EXISTS "${glew_incl}/GL/glew.h")
+    message(FATAL_ERROR "Didn't find required header GL/glew.h")
 else()
-    list(APPEND CMAKE_LIBRARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/win32)
+    install(FILES ${glew_incl}/GL/glew.h DESTINATION include/extlibs/GL)
 endif()
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include/extlibs/WinDepPack COMPONENT headers)
+
+find_package(ZLIB REQUIRED)
+get_target_property(zlib_incl ZLIB::ZLIB INTERFACE_INCLUDE_DIRECTORIES)
+
+if(NOT EXISTS "${zlib_incl}/zlib.h" OR NOT EXISTS "${zlib_incl}/zconf.h")
+    message(FATAL_ERROR "Didn't find required headers zlib.h and zconf.h")
+else()
+    install(FILES ${zlib_incl}/zlib.h ${zlib_incl}/zconf.h DESTINATION include/extlibs/zlib)
+endif()
+
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/licenses/ DESTINATION licenses COMPONENT applications)
-
-
-set(CMAKE_INCLUDE_PATH "${CMAKE_INCLUDE_PATH}" PARENT_SCOPE)
-set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}" PARENT_SCOPE)
