@@ -21,7 +21,7 @@ else()
     if(NOT EXISTS "${zlib_incl}/zlib.h" OR NOT EXISTS "${zlib_incl}/zconf.h")
         message(FATAL_ERROR "Didn't find required headers zlib.h and zconf.h")
     else()
-        install(FILES ${zlib_incl}/zlib.h ${zlib_incl}/zconf.h DESTINATION include/extlibs/zlib)
+        install(FILES ${zlib_incl}/zlib.h ${zlib_incl}/zconf.h DESTINATION include/extlibs/)
     endif()
 endif()
 
